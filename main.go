@@ -15,7 +15,7 @@ import (
 
 func main() {
 
-	log.Println("Nano-TgBot is start")
+	log.Println("Nano-TgBot started")
 
 	// app config
 	conf, err := config.NewAppConfig()
@@ -39,10 +39,10 @@ func main() {
 		zap.L().Fatal("tgbot start", zap.Error(err))
 	}
 
-	// heartbit
+	// heartbeat
 	go func() {
 		for {
-			zap.L().Info("hearbit")
+			zap.L().Info("hearbeat")
 			time.Sleep(time.Second * 10)
 		}
 	}()
@@ -53,7 +53,7 @@ func main() {
 	for sig := range c {
 		zap.L().Info("catch os signal", zap.Any("sig", sig))
 		bot.Stop()
-		zap.L().Info("wait stop")
+		zap.L().Info("waiting for stop")
 		bot.WaitStop()
 		return
 	}
