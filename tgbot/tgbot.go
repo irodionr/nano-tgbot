@@ -49,6 +49,8 @@ func NewBot(conf *BotConf) *Bot {
 func (b *Bot) Start() error {
 
 	// init bot api
+	// API error?
+	// ?[31mERROR?[0m  tgbot/tgbot.go:54       tgbot: new bot api      {"error": "Not Found"}
 	bot, err := tgbotapi.NewBotAPI(b.conf.Token)
 	if err != nil {
 		zap.L().Error("tgbot: new bot api", zap.Error(err))
