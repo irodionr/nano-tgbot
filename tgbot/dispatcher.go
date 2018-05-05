@@ -32,13 +32,24 @@ func (d *Dispatcher) run() {
 
 	for {
 		select {
-		case upd := <-d.updates:
+		case upd, ok := <-d.updates:
+			if !ok {
+				for _, u := range d.users {
+					close(u.GetUserUpdatesChan())
+				}
+
+				close(d.userResp)
+
+				return
+			}
+
 			user, ok := d.users[upd.Message.From.ID]
 			if !ok {
 				user = NewUser(d.userResp)
 				d.users[upd.Message.From.ID] = user
 				user.Start()
 			}
+
 			user.GetUserUpdatesChan() <- upd
 		}
 	}

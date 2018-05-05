@@ -90,16 +90,31 @@ func (b *Bot) run() {
 	// defer done signal
 	defer func() { b.updHdlDone <- struct{}{} }()
 
-	// do something
+	go func() {
+		for {
+			select {
+			case upd, ok := <-b.updChan:
+				if !ok {
+					close(b.disp.GetBotUpdatesChan())
+
+					return
+				}
+				if upd.Message == nil {
+					continue
+				}
+
+				b.disp.GetBotUpdatesChan() <- upd
+			}
+		}
+	}()
+
 	for {
 		select {
-		case upd := <-b.updChan:
-			if upd.Message == nil {
-				continue
+		case ur, ok := <-b.userResp:
+			if !ok {
+				return
 			}
-			b.disp.GetBotUpdatesChan() <- upd
 
-		case ur := <-b.userResp:
 			// resp message
 			msg := tgbotapi.NewMessage(ur.chatID, fmt.Sprintf("%v - %s", ur.userID, b.conf.DefaultMessage))
 
